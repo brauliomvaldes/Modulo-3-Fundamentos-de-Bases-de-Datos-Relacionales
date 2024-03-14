@@ -22,15 +22,11 @@ update users set user_email = 'mariacardenas@gmail.com' where user_id = 2;
 /* - Sentencia para eliminar los datos de una transacción (eliminado de la fila completa) 
 observacion: no se elimina fila, se desactiva cambiando su estado a falso (0)
 */
--- alternativa con variables 
 -- recuperar datos de la transaccion para ser revertida la operación
--- set @amount := (select tr_amount from transactions where tr_id = 4);
--- set @sender := (select tr_sender_user_id from transactions where tr_id = 4);
--- set @receiver := (select tr_receiver_user_id from transactions where tr_id = 4);
--- alternativa menos código
+-- empleando variables
 select @amount_s := tr_amount_sender, @amount_r := tr_amount_receiver, @sender := tr_sender_user_id, @receiver := tr_receiver_user_id 
 				from transactions where tr_id = 4;
--- realiza los cambios 
+-- realizando los cambios necesarios para realizar eliminación virtual
 -- desactiva transacción
 update transactions set tr_state = 0 where tr_id = 4;
 -- reversa los montos en las cuentas involucradas en la transacción

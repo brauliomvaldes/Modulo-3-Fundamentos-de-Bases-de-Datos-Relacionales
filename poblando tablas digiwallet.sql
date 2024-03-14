@@ -77,7 +77,7 @@ RETURN (SELECT account_currency_id FROM accounts INNER JOIN users
 END;
 ||
 -- fin function gen_tr_number
--- creación función para actualizar balance 
+-- creación función para actualizar balance por transacciones
 delimiter ||
 CREATE DEFINER=`root`@`localhost` PROCEDURE `update_balance`(amount_s INTEGER, amount_r INTEGER, id_sender INTEGER, id_receiver INTEGER)
 BEGIN
