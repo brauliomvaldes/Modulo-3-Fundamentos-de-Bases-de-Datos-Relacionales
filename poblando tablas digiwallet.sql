@@ -40,43 +40,28 @@ insert into countries values (3, 'mexico');
 insert into address values (1, 'pasaje ines 245', 1, 1, '+569 256 7880');
 insert into address values (2, 'monseñor joel rios 1.356', 2, 1, '+569 556 8220');
 
-/* poblando transactions */
-delete from transactions where tr_id > 0;
--- tipos de inserciones
--- generando tr_number 
--- para generar number transaction
--- set @tr_number := (SELECT reverse(replace(RAND(),'.','')));
--- insert into transactions values (6, @tr_number, 2, 1, 450000, '2024-03-21', 'cuota 5/8 auto, gracias', 1, 1);
--- insert into transactions values (7, (SELECT reverse(replace(RAND(),'.',''))), 2, 1, 450000, '2024-03-21', 'cuota 5/8 auto, gracias', 1, 1);
--- select @tr_number;
--- convierte number a char 
--- set @trnumber := (select convert(@tr_number, char));
--- insert into transactions values (2, @trnumber, 1, 2, 25800, '2024-03-11', 'tfr por pago de cuenta luz, gracias', 1, 1);
-
+-- creando funciones y procedimientos para poblar transacciones 
 -- quitar modo estructo para crear o utilizar función
 set global log_bin_trust_function_creators=1;
--- crypto.randomUUID() -- largo 36 caracteres
 -- creación funcion para generar número de transacción aleatorio
 delimiter ||
 CREATE DEFINER=`root`@`localhost` FUNCTION `gen_tr_number`() 
 RETURNS varchar(20)
 BEGIN
-    
 RETURN (SELECT (replace(RAND(),'.','')));
 END;
 ||
--- fin function gen_tr_number
+-- fin function 
 -- creación función para recuperar id moneda 
 delimiter ||
 CREATE DEFINER=`root`@`localhost` FUNCTION `get_currency_id`(id INTEGER) 
 RETURNS INTEGER
 BEGIN
-    
 RETURN (SELECT account_currency_id FROM accounts INNER JOIN users
 		ON account_user_id = user_id where user_id = id limit 1);
 END;
 ||
--- fin function gen_tr_number
+-- fin function
 -- creación función para actualizar balance por transacciones
 delimiter ||
 CREATE DEFINER=`root`@`localhost` PROCEDURE `update_balance`(amount_s INTEGER, amount_r INTEGER, id_sender INTEGER, id_receiver INTEGER)
@@ -85,7 +70,7 @@ BEGIN
 	update accounts set account_balance = account_balance + amount_r where account_user_id = id_receiver;
 END;
 ||
--- fin function update_balance
+-- fin procedimiento
  -- creación función para reversar fondos al balance 
 delimiter ||
 CREATE DEFINER=`root`@`localhost` PROCEDURE `restore_balance`(amount_s INTEGER, amount_r INTEGER, id_sender INTEGER, id_receiver INTEGER)
@@ -94,11 +79,12 @@ BEGIN
 	update accounts set account_balance = account_balance - amount_r where account_user_id = id_receiver;
 END;
 ||
--- fin function restore_balance
---
+-- fin procedimiento
+
+-- poblando tabla transacciones
 -- empleando funcion para generar numero de transaccion
 insert into transactions values (1, gen_tr_number(), 1, 2, 15000, 15000,'2024-03-10', 'devolucion dinero, gracias', get_currency_id(1), get_currency_id(2), 1);
--- actualiza los montos en las cuentas involucradas en la transacción
+-- empleando procedimiento para actualiza los saldos en las cuentas involucradas en la transacción
 call update_balance(15000,15000,1,2);
 insert into transactions values (2, gen_tr_number(), 1, 2, 25800, 25800, '2024-03-11', 'tfr por pago de cuenta luz, gracias', get_currency_id(1), get_currency_id(2), 1);
 call update_balance(25800,25800,1,2);
@@ -110,6 +96,7 @@ insert into transactions values (5, gen_tr_number(), 2, 1, 45000, 45000, '2024-0
 call update_balance(45000,45000,1,2);
 insert into transactions values (6, gen_tr_number(), 2, 1, 66000, 66000, '2024-03-21', 'ajuste cuota auto, gracias', get_currency_id(1), get_currency_id(2), 1);
 call update_balance(66000,66000,1,2);
+
 /* poblando contacts */
 insert into contacs values (1, 1, 2, 1);
 insert into contacs values (2, 2, 1, 1);

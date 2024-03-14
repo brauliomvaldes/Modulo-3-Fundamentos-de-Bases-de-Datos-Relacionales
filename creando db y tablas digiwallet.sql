@@ -172,15 +172,20 @@ CREATE TABLE IF NOT EXISTS `digiwallet`.`transactions` (
   CONSTRAINT `fk_sender_user`
     FOREIGN KEY (`tr_sender_user_id`)
     REFERENCES `digiwallet`.`users` (`user_id`),
-  CONSTRAINT `fk_tr_currency`
+  CONSTRAINT `fk_tr_currency_s`
+    FOREIGN KEY (`tr_currency_sender_id`)
+    REFERENCES `digiwallet`.`currencies` (`currency_id`),
+  CONSTRAINT `fk_tr_currency_r`
     FOREIGN KEY (`tr_currency_receiver_id`)
     REFERENCES `digiwallet`.`currencies` (`currency_id`))
+    
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
 CREATE INDEX `fk_sender_user` ON `digiwallet`.`transactions` (`tr_sender_user_id` ASC) VISIBLE;
 CREATE INDEX `fk_receiver_user` ON `digiwallet`.`transactions` (`tr_receiver_user_id` ASC) VISIBLE;
-CREATE INDEX `fk_tr_currency` ON `digiwallet`.`transactions` (`tr_currency_receiver_id` ASC) VISIBLE;
+CREATE INDEX `fk_tr_currency_s` ON `digiwallet`.`transactions` (`tr_currency_sender_id` ASC) VISIBLE;
+CREATE INDEX `fk_tr_currency_r` ON `digiwallet`.`transactions` (`tr_currency_receiver_id` ASC) VISIBLE;
 
 -- -----------------------------------------------------
 -- Table `digiwallet`.`contacs`
