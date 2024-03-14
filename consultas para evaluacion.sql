@@ -34,9 +34,8 @@ select @amount_s := tr_amount_sender, @amount_r := tr_amount_receiver, @sender :
 -- desactiva transacción
 update transactions set tr_state = 0 where tr_id = 4;
 -- reversa los montos en las cuentas involucradas en la transacción
-update accounts set account_balance = account_balance + @amount_s where account_user_id = @sender;
-update accounts set account_balance = account_balance - @amount_r where account_user_id = @receiver;
+call restore_balance(@amount_s, @amount_r, @sender, @receiver);
 -- confirma desactivación de transacción
 select tr_state from transactions where tr_id = 4;
--- confirma actualizacion de saldos
+-- visualiza actualizacion de saldos
 select account_user_id, account_balance from accounts where account_user_id = 1 or account_user_id=2;

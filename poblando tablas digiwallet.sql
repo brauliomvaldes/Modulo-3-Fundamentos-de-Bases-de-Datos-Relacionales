@@ -77,18 +77,39 @@ RETURN (SELECT account_currency_id FROM accounts INNER JOIN users
 END;
 ||
 -- fin function gen_tr_number
--- probando functiones
--- select gen_tr_number();
--- select get_currency_id(1);
+-- creación función para actualizar balance 
+delimiter ||
+CREATE DEFINER=`root`@`localhost` PROCEDURE `update_balance`(amount_s INTEGER, amount_r INTEGER, id_sender INTEGER, id_receiver INTEGER)
+BEGIN
+    update accounts set account_balance = account_balance - amount_s where account_user_id = id_sender;
+	update accounts set account_balance = account_balance + amount_r where account_user_id = id_receiver;
+END;
+||
+-- fin function update_balance
+ -- creación función para reversar fondos al balance 
+delimiter ||
+CREATE DEFINER=`root`@`localhost` PROCEDURE `restore_balance`(amount_s INTEGER, amount_r INTEGER, id_sender INTEGER, id_receiver INTEGER)
+BEGIN
+    update accounts set account_balance = account_balance + amount_s where account_user_id = id_sender;
+	update accounts set account_balance = account_balance - amount_r where account_user_id = id_receiver;
+END;
+||
+-- fin function restore_balance
 --
 -- empleando funcion para generar numero de transaccion
 insert into transactions values (1, gen_tr_number(), 1, 2, 15000, 15000,'2024-03-10', 'devolucion dinero, gracias', get_currency_id(1), get_currency_id(2), 1);
+-- actualiza los montos en las cuentas involucradas en la transacción
+call update_balance(15000,15000,1,2);
 insert into transactions values (2, gen_tr_number(), 1, 2, 25800, 25800, '2024-03-11', 'tfr por pago de cuenta luz, gracias', get_currency_id(1), get_currency_id(2), 1);
+call update_balance(25800,25800,1,2);
 insert into transactions values (3, gen_tr_number(), 2, 1, 75000, 75000, '2024-03-12', 'prestamo dinero acordado', get_currency_id(1), get_currency_id(2), 1);
+call update_balance(75000,75000,1,2);
 insert into transactions values (4, gen_tr_number(), 1, 2, 151000, 151000, '2024-03-20', 'adelanto devolucion dinero, gracias', get_currency_id(1), get_currency_id(2), 1);
+call update_balance(151000,151000,1,2);
 insert into transactions values (5, gen_tr_number(), 2, 1, 45000, 45000, '2024-03-21', 'cuota 5/8 auto, gracias', get_currency_id(1), get_currency_id(2), 1);
+call update_balance(45000,45000,1,2);
 insert into transactions values (6, gen_tr_number(), 2, 1, 66000, 66000, '2024-03-21', 'ajuste cuota auto, gracias', get_currency_id(1), get_currency_id(2), 1);
-
+call update_balance(66000,66000,1,2);
 /* poblando contacts */
 insert into contacs values (1, 1, 2, 1);
 insert into contacs values (2, 2, 1, 1);
