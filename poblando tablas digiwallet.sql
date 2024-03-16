@@ -28,6 +28,7 @@ insert into types_of_accounts values (4, 'cuenta de ahorro', 1);
 /* poblando accounts */
 insert into accounts values (1, 1, '000-50-01-257', 1000000.00, 1, '2023-10-31', 1, 1, 1);
 insert into accounts values (2, 2, '000-10-03-598', 1000000.00, 1, '2023-12-31', 2, 1, 1);
+insert into accounts values (3, 1, '01-50-01-00257', 1000000.00, 1, '2023-12-28', 1, 2, 1);
 
 /* poblando cities */
 insert into cities values (1, 'santiago');
@@ -43,46 +44,6 @@ insert into countries values (3, 'mexico');
 insert into address values (1, 'pasaje ines 245', 1, 1, '+569 256 7880');
 insert into address values (2, 'monseñor joel rios 1.356', 2, 1, '+569 556 8220');
 
--- creando funciones y procedimientos para poblar transacciones 
--- quitar modo estructo para crear o utilizar función
-set global log_bin_trust_function_creators=1;
--- creación funcion para generar número de transacción aleatorio
-delimiter ||
-CREATE DEFINER=`root`@`localhost` FUNCTION `gen_tr_number`() 
-RETURNS varchar(20)
-BEGIN
-RETURN (SELECT (replace(RAND(),'.','')));
-END;
-||
--- fin function 
--- creación función para recuperar id moneda 
-delimiter ||
-CREATE DEFINER=`root`@`localhost` FUNCTION `get_currency_id`(id INTEGER) 
-RETURNS INTEGER
-BEGIN
-RETURN (SELECT account_currency_id FROM accounts INNER JOIN users
-		ON account_user_id = user_id where user_id = id limit 1);
-END;
-||
--- fin function
--- creación función para actualizar balance por transacciones
-delimiter ||
-CREATE DEFINER=`root`@`localhost` PROCEDURE `update_balance`(amount_s FLOAT(12,2), amount_r FLOAT(12,2), id_sender INTEGER, id_receiver INTEGER)
-BEGIN
-    update accounts set account_balance = ROUND((account_balance - amount_s),2) where account_user_id = id_sender;
-	update accounts set account_balance = ROUND((account_balance + amount_r),2) where account_user_id = id_receiver;
-END;
-||
--- fin procedimiento
- -- creación función para reversar fondos al balance 
-delimiter ||
-CREATE DEFINER=`root`@`localhost` PROCEDURE `restore_balance`(amount_s FLOAT(12,2), amount_r FLOAT(12,2), id_sender INTEGER, id_receiver INTEGER)
-BEGIN
-    update accounts set account_balance = ROUND((account_balance + amount_s),2) where account_user_id = id_sender;
-	update accounts set account_balance = ROUND((account_balance - amount_r),2) where account_user_id = id_receiver;
-END;
-||
--- fin procedimiento
 
 -- poblando tabla transacciones
 -- empleando funcion para generar numero de transaccion
