@@ -1,3 +1,6 @@
+-- -----------------------------------------------------
+-- Schema digiwallet
+-- -----------------------------------------------------
 USE `digiwallet` ;
 /* poblando user */
 
@@ -23,8 +26,8 @@ insert into types_of_accounts values (3, 'cuenta corriente', 1);
 insert into types_of_accounts values (4, 'cuenta de ahorro', 1);
 
 /* poblando accounts */
-insert into accounts values (1, 1, '000-50-01-257', 1000000, 1, '2023-10-31', 1, 1, 1);
-insert into accounts values (2, 2, '000-10-03-598', 1000000, 1, '2023-12-31', 2, 1, 1);
+insert into accounts values (1, 1, '000-50-01-257', 1000000.00, 1, '2023-10-31', 1, 1, 1);
+insert into accounts values (2, 2, '000-10-03-598', 1000000.00, 1, '2023-12-31', 2, 1, 1);
 
 /* poblando cities */
 insert into cities values (1, 'santiago');
@@ -64,19 +67,19 @@ END;
 -- fin function
 -- creación función para actualizar balance por transacciones
 delimiter ||
-CREATE DEFINER=`root`@`localhost` PROCEDURE `update_balance`(amount_s INTEGER, amount_r INTEGER, id_sender INTEGER, id_receiver INTEGER)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `update_balance`(amount_s FLOAT(12,2), amount_r FLOAT(12,2), id_sender INTEGER, id_receiver INTEGER)
 BEGIN
-    update accounts set account_balance = account_balance - amount_s where account_user_id = id_sender;
-	update accounts set account_balance = account_balance + amount_r where account_user_id = id_receiver;
+    update accounts set account_balance = ROUND((account_balance - amount_s),2) where account_user_id = id_sender;
+	update accounts set account_balance = ROUND((account_balance + amount_r),2) where account_user_id = id_receiver;
 END;
 ||
 -- fin procedimiento
  -- creación función para reversar fondos al balance 
 delimiter ||
-CREATE DEFINER=`root`@`localhost` PROCEDURE `restore_balance`(amount_s INTEGER, amount_r INTEGER, id_sender INTEGER, id_receiver INTEGER)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `restore_balance`(amount_s FLOAT(12,2), amount_r FLOAT(12,2), id_sender INTEGER, id_receiver INTEGER)
 BEGIN
-    update accounts set account_balance = account_balance + amount_s where account_user_id = id_sender;
-	update accounts set account_balance = account_balance - amount_r where account_user_id = id_receiver;
+    update accounts set account_balance = ROUND((account_balance + amount_s),2) where account_user_id = id_sender;
+	update accounts set account_balance = ROUND((account_balance - amount_r),2) where account_user_id = id_receiver;
 END;
 ||
 -- fin procedimiento

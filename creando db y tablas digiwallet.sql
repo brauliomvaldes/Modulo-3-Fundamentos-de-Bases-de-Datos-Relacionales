@@ -8,9 +8,6 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 -- -----------------------------------------------------
--- Schema mydb
--- -----------------------------------------------------
--- -----------------------------------------------------
 -- Schema digiwallet
 -- -----------------------------------------------------
 -- -----------------------------------------------------
@@ -81,7 +78,7 @@ CREATE TABLE IF NOT EXISTS `digiwallet`.`accounts` (
   `account_id` INT NOT NULL AUTO_INCREMENT,
   `account_user_id` INT NOT NULL,
   `account_number` VARCHAR(30) NOT NULL,
-  `account_balance` FLOAT NOT NULL,
+  `account_balance` FLOAT(12,2) NOT NULL,
   `account_currency_id` INT NOT NULL,
   `account_created_at` DATE NOT NULL,
   `account_type_id` INT NOT NULL,
@@ -158,8 +155,8 @@ CREATE TABLE IF NOT EXISTS `digiwallet`.`transactions` (
   `tr_number` VARCHAR(20) NOT NULL,
   `tr_sender_user_id` INT NOT NULL,
   `tr_receiver_user_id` INT NOT NULL,
-  `tr_amount_sender` FLOAT NOT NULL,
-  `tr_amount_receiver` FLOAT NOT NULL,
+  `tr_amount_sender` FLOAT(12,2) NOT NULL,
+  `tr_amount_receiver` FLOAT(12,2) NOT NULL,
   `tr_date` DATE NOT NULL,
   `tr_detail` VARCHAR(100) NOT NULL,
   `tr_currency_sender_id` INT NOT NULL, 
