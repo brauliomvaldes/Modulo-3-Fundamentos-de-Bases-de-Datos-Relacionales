@@ -30,8 +30,10 @@ observacion: no se elimina fila, se desactiva cambiando su estado a falso (0)
 select @amount_s := ROUND(tr_amount_sender,2), @amount_r := round(tr_amount_receiver,2), @sender := tr_sender_user_id, @receiver := tr_receiver_user_id 
 				from transactions where tr_id = 4;
 -- realizando los cambios necesarios para realizar eliminación virtual
+-- delete from transactions where tr_id = 4;
 -- desactiva transacción, eliminación virtual
 update transactions set tr_state = 0 where tr_id = 4;
+
 -- visualiza actualizacion antes de reversar saldos
 select account_user_id, account_balance from accounts where account_user_id = 1 or account_user_id=2;
 -- reversa los montos en las cuentas involucradas en la transacción
