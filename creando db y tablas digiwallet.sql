@@ -232,14 +232,14 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 -- -----------------------------------------------------------------------
 -- creación de funciones y procedimientos para trabajar con las tablas
 -- ----------------------------------------------------------------------- 
--- quitando modo estructo para crear o utilizar función y procedimientos
-set global log_bin_trust_function_creators=1;
+-- quitANDo modo estructo para crear o utilizar función y procedimientos
+SET global log_bin_trust_function_creators=1;
 -- funcion para generar número de transacción aleatorio
 delimiter ||
 CREATE DEFINER=`root`@`localhost` FUNCTION `gen_tr_number`() 
-RETURNS varchar(20)
+RETURNS VARCHAR(20)
 BEGIN
-RETURN (SELECT (replace(RAND(),'.','')));
+RETURN (SELECT (REPLACE(RAND(),'.','')));
 END;
 ||
 -- fin function 
@@ -250,20 +250,20 @@ CREATE DEFINER=`root`@`localhost` FUNCTION `get_currency_id`(id INTEGER)
 RETURNS INTEGER
 BEGIN
 RETURN (SELECT account_currency_id FROM accounts INNER JOIN users
-		ON account_user_id = user_id where user_id = id limit 1);
+		ON account_user_id = user_id WHERE user_id = id LIMIT 1);
 END;
 ||
 -- fin function
 
 -- procedimiento para actualizar balance por transacciones
 delimiter ||
-CREATE DEFINER=`root`@`localhost` PROCEDURE `update_balance`
+CREATE DEFINER=`root`@`localhost` PROCEDURE `UPDATE_balance`
 (amount_s FLOAT(12,2), amount_r FLOAT(12,2), id_sender INTEGER, id_receiver INTEGER)
 BEGIN
-    update accounts set account_balance = ROUND((account_balance - amount_s),2) 
-    where account_user_id = id_sender;
-	update accounts set account_balance = ROUND((account_balance + amount_r),2) 
-    where account_user_id = id_receiver;
+    UPDATE accounts SET account_balance = ROUND((account_balance - amount_s),2) 
+    WHERE account_user_id = id_sender;
+	UPDATE accounts SET account_balance = ROUND((account_balance + amount_r),2) 
+    WHERE account_user_id = id_receiver;
 END;
 ||
 -- fin procedimiento
@@ -273,10 +273,10 @@ delimiter ||
 CREATE DEFINER=`root`@`localhost` PROCEDURE `restore_balance`
 (amount_s FLOAT(12,2), amount_r FLOAT(12,2), id_sender INTEGER, id_receiver INTEGER)
 BEGIN
-    update accounts set account_balance = ROUND((account_balance + amount_s),2) 
-    where account_user_id = id_sender;
-	update accounts set account_balance = ROUND((account_balance - amount_r),2) 
-    where account_user_id = id_receiver;
+    UPDATE accounts SET account_balance = ROUND((account_balance + amount_s),2) 
+    WHERE account_user_id = id_sender;
+	UPDATE accounts SET account_balance = ROUND((account_balance - amount_r),2) 
+    WHERE account_user_id = id_receiver;
 END;
 ||
 -- fin procedimiento
@@ -284,13 +284,13 @@ END;
 -- procedimiento para depositar mismo usuario con mas de una cuenta
 delimiter ||
 CREATE DEFINER=`root`@`localhost` PROCEDURE `make_deposit`
-(user_id INTEGER, amount FLOAT(12,2), account_s VARCHAR(30), account_r VARCHAR(30))
+(amount FLOAT(12,2), id_account_s VARCHAR(30), id_account_r VARCHAR(30))
 BEGIN
-    update accounts set account_balance = ROUND((account_balance - amount),2) 
-    where account_number = account_s and account_user_id = user_id;
+    UPDATE accounts SET account_balance = ROUND((account_balance - amount),2) 
+    WHERE account_id = id_account_s;
     
-	update accounts set account_balance = ROUND((account_balance + amount),2) 
-    where account_number = account_r and account_user_id = user_id;
+	UPDATE accounts SET account_balance = ROUND((account_balance + amount),2) 
+    WHERE account_id = id_account_r;
 END;
 ||
 -- fin procedimiento
