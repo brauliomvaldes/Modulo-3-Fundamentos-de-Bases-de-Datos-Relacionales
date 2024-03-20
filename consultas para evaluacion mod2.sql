@@ -32,9 +32,9 @@ SELECT * FROM temporary_account_user;
 -- se envian al frontend para para selección y validación de saldos,
 -- simula la selección de las cuentas involucradas para verificar los saldos
 -- se recuperan esos datos seleccionados y estos podrían ser los siguientes
--- ID del sender
+-- ID de la cuenta del sender
 SET @account_id_sender := 1;
--- ID del receiver
+-- ID de la cuenta del receiver
 SET @account_id_receiver := 3;
 -- seleccionar cuentas con saldos para relizar la operación
 -- sólo si hay saldo disponible en cuenta SENDER se puede realizar la operación

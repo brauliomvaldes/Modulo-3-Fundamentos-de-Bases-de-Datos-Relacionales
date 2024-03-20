@@ -14,6 +14,15 @@ USE `digiwallet` ;
 -- -----------------------------------------------------
 -- Table `digiwallet`.`users`
 -- -----------------------------------------------------
+-- SE SOLICTO:
+-- Usuario: Representa a cada usuario individual del sistema de monedero virtual.
+-- Atributos:
+-- * user_id (clave primaria)
+-- * nombre
+-- * correo electrónico
+-- * contraseña
+-- * saldo.       <--- EXCLLUIDO, ESTE ATRIBUTO SE CREO LA TABLA ACCOUNTS
+
 CREATE TABLE IF NOT EXISTS `digiwallet`.`users` (
   `user_id` INT NOT NULL AUTO_INCREMENT,
   `user_name` VARCHAR(100) NOT NULL,
@@ -46,6 +55,13 @@ DEFAULT CHARACTER SET = utf8mb3;
 -- -----------------------------------------------------
 -- Table `digiwallet`.`currencies`
 -- -----------------------------------------------------
+-- SE SOLICTO:
+-- Moneda: Representa las diferentes monedas que se pueden utilizar en el monedero virtual.
+-- Atributos:
+-- * currency_id (Primary Key)
+-- * currency_name
+-- * currency_symbol
+
 CREATE TABLE IF NOT EXISTS `digiwallet`.`currencies` (
   `currency_id` INT NOT NULL AUTO_INCREMENT,
   `currency_name` VARCHAR(50) NOT NULL,
@@ -145,6 +161,15 @@ CREATE INDEX `fk_city` ON `digiwallet`.`address` (`address_city_id` ASC) VISIBLE
 -- -----------------------------------------------------
 -- Table `digiwallet`.`transactions`
 -- -----------------------------------------------------
+-- SE SOLICTO:
+-- Transacción: Representa cada transacción financiera realizada por los usuarios.
+-- Atributos:
+-- * transaction_id (Primary Key)
+-- * sender_user_id (Foreign Key referenciando a User)
+-- * receiver_user_id (Foreign Key referenciando a User)
+-- * importe
+-- * transaction_date.
+
 CREATE TABLE IF NOT EXISTS `digiwallet`.`transactions` (
   `tr_id` INT NOT NULL AUTO_INCREMENT,
   `tr_number` VARCHAR(20) NOT NULL,
@@ -228,6 +253,11 @@ CREATE INDEX `fk_address_id` ON `digiwallet`.`users_address` (`ua_address_id` AS
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+-- En lo general, se mantuvieron los requerimientos pero se agregaron y omitiron 
+-- campos, por ejemplo para evitar eliminar y perder información, se creo campo
+-- estado (state) para desactivar movimientos, también, las tablas adicionales
+-- se pensaron para un futuro uso si así se estima necesario.
 
 -- -----------------------------------------------------------------------
 -- creación de funciones y procedimientos para trabajar con las tablas
