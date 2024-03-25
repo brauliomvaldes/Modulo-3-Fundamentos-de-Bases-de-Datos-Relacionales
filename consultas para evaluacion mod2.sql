@@ -38,13 +38,13 @@ SET @account_id_sender := 1;
 SET @account_id_receiver := 3;
 -- seleccionar cuentas con saldos para relizar la operación
 -- sólo si hay saldo disponible en cuenta SENDER se puede realizar la operación
-INSERT INTO transactions VALUES (7, gen_tr_number(), 1, 1, 17770, 17770, '2024-03-11', 'tfr cuentas propias', get_currency_id(1), get_currency_id(2), 1);
+INSERT INTO transactions VALUES (7, gen_tr_number(), @account_id_sender, @account_id_receiver, 17770, 17770, '2024-03-11', 'tfr cuentas propias', 1);
 -- se realiza la actualización de fondos, enviando el monto y los ID de las cuentas
-CALL make_deposit(17770,@account_id_sender,@account_id_receiver);
+CALL make_deposit(17770,@account_id_sender, @account_id_receiver);
 /* realiazar retiros de fondos.*/
 -- se entiende que retiro de fondos es traspasar fondos a un destinatario
-INSERT INTO transactions VALUES (8, gen_tr_number(), 1, 2, 15550, 15550, '2024-03-11', 'tfr por pago de cuenta luz, graciAS', get_currency_id(1), get_currency_id(2), 1);
-CALL update_balance(15550,15550,1,2);
+INSERT INTO transactions VALUES (8, gen_tr_number(), @account_id_sender, @account_id_receiver, 15550, 15550, '2024-03-11', 'tfr por pago de cuenta luz, graciAS', 1);
+CALL update_balance(15550,15550, @account_id_sender, @account_id_receiver);
 
 /* Historial de transacciones: Debe haber un registro completo de
 todAS las transacciones realizadas en la aplicación. */

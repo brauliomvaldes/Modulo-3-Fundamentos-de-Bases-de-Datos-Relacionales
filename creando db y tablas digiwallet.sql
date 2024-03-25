@@ -173,36 +173,28 @@ CREATE INDEX `fk_city` ON `digiwallet`.`address` (`address_city_id` ASC) VISIBLE
 CREATE TABLE IF NOT EXISTS `digiwallet`.`transactions` (
   `tr_id` INT NOT NULL AUTO_INCREMENT,
   `tr_number` VARCHAR(20) NOT NULL,
-  `tr_sender_user_id` INT NOT NULL,
-  `tr_receiver_user_id` INT NOT NULL,
+  `tr_sender_user_account_id` INT NOT NULL,
+  `tr_receiver_user_account_id` INT NOT NULL,
   `tr_amount_sender` FLOAT(12,2) NOT NULL,
   `tr_amount_receiver` FLOAT(12,2) NOT NULL,
   `tr_date` DATE NOT NULL,
   `tr_detail` VARCHAR(100) NOT NULL,
-  `tr_currency_sender_id` INT NOT NULL, 
-  `tr_currency_receiver_id` INT NOT NULL, 
   `tr_state` TINYINT NOT NULL,
   PRIMARY KEY (`tr_id`),
-  CONSTRAINT `fk_receiver_user`
-    FOREIGN KEY (`tr_receiver_user_id`)
-    REFERENCES `digiwallet`.`users` (`user_id`),
-  CONSTRAINT `fk_sender_user`
-    FOREIGN KEY (`tr_sender_user_id`)
-    REFERENCES `digiwallet`.`users` (`user_id`),
-  CONSTRAINT `fk_tr_currency_s`
-    FOREIGN KEY (`tr_currency_sender_id`)
-    REFERENCES `digiwallet`.`currencies` (`currency_id`),
-  CONSTRAINT `fk_tr_currency_r`
-    FOREIGN KEY (`tr_currency_receiver_id`)
-    REFERENCES `digiwallet`.`currencies` (`currency_id`))
+  CONSTRAINT `fk_receiver_user_account`
+    FOREIGN KEY (`tr_receiver_user_account_id`)
+    REFERENCES `digiwallet`.`accounts` (`account_id`),
+  CONSTRAINT `fk_sender_user_account`
+    FOREIGN KEY (`tr_sender_user_account_id`)
+    REFERENCES `digiwallet`.`accounts` (`account_id`)
+  )
     
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb3;
 
-CREATE INDEX `fk_sender_user` ON `digiwallet`.`transactions` (`tr_sender_user_id` ASC) VISIBLE;
-CREATE INDEX `fk_receiver_user` ON `digiwallet`.`transactions` (`tr_receiver_user_id` ASC) VISIBLE;
-CREATE INDEX `fk_tr_currency_s` ON `digiwallet`.`transactions` (`tr_currency_sender_id` ASC) VISIBLE;
-CREATE INDEX `fk_tr_currency_r` ON `digiwallet`.`transactions` (`tr_currency_receiver_id` ASC) VISIBLE;
+CREATE INDEX `fk_sender_user_account` ON `digiwallet`.`transactions` (`tr_sender_user_account_id` ASC) VISIBLE;
+CREATE INDEX `fk_receiver_user_account` ON `digiwallet`.`transactions` (`tr_receiver_user_account_id` ASC) VISIBLE;
+
 
 -- -----------------------------------------------------
 -- Table `digiwallet`.`contacs`
@@ -288,12 +280,15 @@ END;
 -- procedimiento para actualizar balance por transacciones
 delimiter ||
 CREATE DEFINER=`root`@`localhost` PROCEDURE `UPDATE_balance`
-(amount_s FLOAT(12,2), amount_r FLOAT(12,2), id_sender INTEGER, id_receiver INTEGER)
+(amount_s FLOAT(12,2), 
+amount_r FLOAT(12,2), 
+id_account_sender INTEGER, 
+id_account_receiver INTEGER)
 BEGIN
     UPDATE accounts SET account_balance = ROUND((account_balance - amount_s),2) 
-    WHERE account_user_id = id_sender;
+    WHERE account_id = id_account_sender;
 	UPDATE accounts SET account_balance = ROUND((account_balance + amount_r),2) 
-    WHERE account_user_id = id_receiver;
+    WHERE account_id = id_account_receiver;
 END;
 ||
 -- fin procedimiento
@@ -301,12 +296,15 @@ END;
 -- procedimiento para reversar fondos al balance 
 delimiter ||
 CREATE DEFINER=`root`@`localhost` PROCEDURE `restore_balance`
-(amount_s FLOAT(12,2), amount_r FLOAT(12,2), id_sender INTEGER, id_receiver INTEGER)
+(amount_s FLOAT(12,2), 
+amount_r FLOAT(12,2), 
+id_account_sender INTEGER, 
+id_account_receiver INTEGER)
 BEGIN
     UPDATE accounts SET account_balance = ROUND((account_balance + amount_s),2) 
-    WHERE account_user_id = id_sender;
+    WHERE account_id = id_account_sender;
 	UPDATE accounts SET account_balance = ROUND((account_balance - amount_r),2) 
-    WHERE account_user_id = id_receiver;
+    WHERE account_id = id_account_receiver;
 END;
 ||
 -- fin procedimiento
@@ -314,7 +312,9 @@ END;
 -- procedimiento para depositar mismo usuario con mas de una cuenta
 delimiter ||
 CREATE DEFINER=`root`@`localhost` PROCEDURE `make_deposit`
-(amount FLOAT(12,2), id_account_s VARCHAR(30), id_account_r VARCHAR(30))
+(amount FLOAT(12,2), 
+id_account_s INTEGER, 
+id_account_r INTEGER)
 BEGIN
     UPDATE accounts SET account_balance = ROUND((account_balance - amount),2) 
     WHERE account_id = id_account_s;
