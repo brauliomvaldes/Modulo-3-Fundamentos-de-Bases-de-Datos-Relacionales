@@ -46,7 +46,7 @@ DEFAULT CHARACTER SET = utf8mb3;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `digiwallet`.`banks` (
   `bank_id` INT NOT NULL AUTO_INCREMENT,
-  `bank_nombre` VARCHAR(45) NOT NULL,
+  `bank_name` VARCHAR(45) NOT NULL,
   `bank_state` TINYINT NOT NULL,
   PRIMARY KEY (`bank_id`))
 ENGINE = InnoDB
